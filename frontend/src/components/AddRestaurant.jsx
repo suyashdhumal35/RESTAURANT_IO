@@ -19,6 +19,46 @@ const AddRestaurant = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
 
+    // Cloudinary credentials (replace with your actual values)
+    const cloudinaryUploadUrl = "https://api.cloudinary.com/v1_1/dgnxnsl0p/image/upload"; // Replace 'your-cloud-name' with your Cloudinary cloud name
+    const cloudinaryUploadPreset = "suyash"; // Replace with your Cloudinary upload preset
+
+    // Handle Image Upload
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", cloudinaryUploadPreset);
+
+        setLoading(true);
+        setMessage("");
+
+        try {
+            // Upload to Cloudinary
+            const response = await fetch(cloudinaryUploadUrl, {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                // Log the uploaded image URL to the console
+                console.log("Uploaded Image URL:", data.secure_url);
+                // Set the imageUrl state with the Cloudinary URL
+                setRestaurant((prev) => ({ ...prev, imageUrl: data.secure_url }));
+            } else {
+                setMessage("Failed to upload image.");
+            }
+        } catch (error) {
+            setMessage("Error uploading image.");
+            console.error("Image Upload Error:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         const fetchLastRestaurant = async () => {
             try {
@@ -63,6 +103,7 @@ const AddRestaurant = () => {
             const data = await response.json();
             if (response.ok) {
                 setMessage("Restaurant added successfully!");
+                console.log("Submitted Restaurant Data:", restaurant);
                 setRestaurant({
                     id: (parseInt(restaurant.id) + 1).toString(), // Increment ID for next entry
                     name: "",
@@ -93,25 +134,16 @@ const AddRestaurant = () => {
             <h1 className="text-3xl font-bold mb-6 text-center">Add New Restaurant</h1>
             {message && <p className={`mb-4 text-center ${message.includes("successfully") ? "text-green-600" : "text-red-600"}`}>{message}</p>}
             <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded-md">
-                
-                {/* ID and Name in One Row */}
-                <div className="flex gap-4 mb-3">
-                    <input
-                        type="text"
-                        placeholder="Restaurant ID"
-                        value={restaurant.id}
-                        readOnly
-                        className="border p-2 w-1/4 rounded bg-gray-100"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Restaurant Name"
-                        value={restaurant.name}
-                        onChange={(e) => setRestaurant({ ...restaurant, name: e.target.value })}
-                        className="border p-2 w-3/4 rounded"
-                        required
-                    />
-                </div>
+
+                {/* Restaurant Name */}
+                <input
+                    type="text"
+                    placeholder="Restaurant Name"
+                    value={restaurant.name}
+                    onChange={(e) => setRestaurant({ ...restaurant, name: e.target.value })}
+                    className="border p-2 w-full mb-3 rounded"
+                    required
+                />
 
                 {/* Cuisines and Promotion in One Row */}
                 <div className="flex gap-4 mb-3">
@@ -133,15 +165,26 @@ const AddRestaurant = () => {
                     </div>
                 </div>
 
-                {/* Image URL */}
-                <input
-                    type="text"
-                    placeholder="Image URL"
-                    value={restaurant.imageUrl}
-                    onChange={(e) => setRestaurant({ ...restaurant, imageUrl: e.target.value })}
-                    className="border p-2 w-full mb-3 rounded"
-                    required
-                />
+                {/* Image Upload */}
+                <div className="mb-3">
+                    <input
+                        type="file"
+                        onChange={handleImageUpload}
+                        className="border p-2 w-full rounded"
+                        accept="image/*"
+                    />
+                </div>
+
+                {/* Preview Image */}
+                {restaurant.imageUrl && (
+                    <div className="mb-3 text-center">
+                        <img
+                            src={restaurant.imageUrl}
+                            alt="Uploaded"
+                            className="w-48 mx-auto rounded-md shadow-md"
+                        />
+                    </div>
+                )}
 
                 {/* Cost, Delivery Time, Rating in One Row */}
                 <div className="flex gap-4 mb-3">
@@ -175,7 +218,11 @@ const AddRestaurant = () => {
                     </div>
                 </div>
 
-                <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded w-full mt-4" disabled={loading}>
+                <button
+                    type="submit"
+                    className="bg-green-500 text-white px-4 py-2 rounded w-full mt-4"
+                    disabled={loading}
+                >
                     {loading ? "Submitting..." : "Submit"}
                 </button>
             </form>
