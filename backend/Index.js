@@ -103,9 +103,6 @@ app.post("/add-restaurant", async (req, res) => {
         res.status(500).json({ error: "Error adding restaurant", details: error.message });
     }
 });
-
-
-
 // ✅ Start Server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running at http://127.0.0.1:${PORT}/`));
