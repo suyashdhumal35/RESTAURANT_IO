@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 const AddRestaurant = () => {
+    const navigate = useNavigate();
     const [restaurant, setRestaurant] = useState({
         name: '',
         cuisines: [],
@@ -191,11 +193,6 @@ const AddRestaurant = () => {
         setRestaurant({ ...restaurant, [menuType]: updatedMenu });
     };
 
-
-
-    const navigate = useNavigate();
-    // ... (keep all the existing state declarations)
-
     // Form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -222,9 +219,23 @@ const AddRestaurant = () => {
                 throw new Error(errorData.message || 'Failed to add restaurant');
             }
 
-            // Navigate to home page after successful submission
-            navigate("/");
-
+            alert('Restaurant added successfully!');
+            navigate("/");  // Add this line to navigate to home page
+            // Reset form
+            setRestaurant({
+                name: '',
+                cuisines: [],
+                costForTwoMessage: '',
+                imageUrl: '',
+                promotion: false,
+                deliveryTime: '',
+                rating: 0,
+                vegMenu: [],
+                nonVegMenu: [],
+                drinks: [],
+                specialties: []
+            });
+            setLastId(lastId + 1);
         } catch (err) {
             console.error('Error adding restaurant:', err);
             setError(err.message);
@@ -232,7 +243,6 @@ const AddRestaurant = () => {
             setLoading(false);
         }
     };
-
 
     return (
         <div className="container mx-auto p-4">

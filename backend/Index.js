@@ -51,20 +51,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-
-
-// ✅ Add Restaurant
-app.post("/add-restaurant", async (req, res) => {
-    try {
-        const restaurant = new Restaurant(req.body);
-        const result = await restaurant.save();
-        res.status(201).json(result);
-    } catch (error) {
-        console.error("Add Restaurant Error:", error);
-        res.status(500).json({ error: "Error adding restaurant" });
-    }
-});
-
 // ✅ Get All Restaurants
 // ✅ Fetch all restaurants (From Restaurant Collection)
 app.get("/restaurants", async (req, res) => {
@@ -103,6 +89,8 @@ app.post("/add-restaurant", async (req, res) => {
         res.status(500).json({ error: "Error adding restaurant", details: error.message });
     }
 });
+
+
 // ✅ Start Server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running at http://127.0.0.1:${PORT}/`));
