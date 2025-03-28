@@ -32,7 +32,7 @@ const Nav = () => {
                             <li><Link to="/add-restaurant" className="hover:text-blue-500">Add Products</Link></li>
                             <li><Link to="/update" className="hover:text-blue-500">Update Products</Link></li>
                             <li><Link to="/profile" className="hover:text-blue-500">Profile</Link></li>
-                            <li> <Link onClick={logout} to="/signup" className="hover:text-blue-500">Logout :- {JSON.parse(auth).name}</Link> </li>
+                            <li> <Link onClick={logout} to="/signup" className="hover:text-blue-500">Logout :- {JSON.parse(auth).name || "Guest"                            }</Link> </li>
                         </ul>
                     </nav>
                 </>
